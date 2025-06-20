@@ -29,9 +29,9 @@ print(f"Using device: {device}")
 class BreastCancerModel(nn.Module):
     def __init__(self):
         super().__init__()
-        self.layer_1 = nn.Linear(in_features=30, out_features=75)   # Input layer
-        self.layer_2 = nn.Linear(in_features=75, out_features=75)    # Hidden layer
-        self.layer_3 = nn.Linear(in_features=75, out_features=1)   # Output layer
+        self.layer_1 = nn.Linear(in_features=30, out_features=90)   # Input layer
+        self.layer_2 = nn.Linear(in_features=90, out_features=90)    # Hidden layer
+        self.layer_3 = nn.Linear(in_features=90, out_features=1)   # Output layer
         self.relu = nn.ReLU()
 
     def forward(self, x):   # x -> layer_1 -> layer_2 -> layer_3 -> output
@@ -50,6 +50,7 @@ optimizer = torch.optim.Adam(params=model.parameters(), # Adam optimizer
 
 # Calculate accuracy - out of N samples, what percentage does it get right?
 def accuracy_fn(y_true, y_pred):
+    """Computes the accuracy of the predictions to the actual label"""
     correct = torch.eq(y_true, y_pred).sum().item()
     acc = (correct/len(y_pred)) * 100
     return acc
@@ -60,7 +61,7 @@ torch.mps.manual_seed(27)
 np.random.seed(27)
 
 # Set the number of epochs
-epochs = 1000
+epochs = 1001
 
 # Put the data on the target device
 X_train, y_train = X_train.to(device), y_train.to(device)
@@ -119,7 +120,7 @@ torch.save(obj=model.state_dict(),  # Save only the model's state dict
            f=MODEL_SAVE_PATH)
 
 # Convert data using principled component analysis and plot
-def pca_and_plot(model: torch.nn.Module, 
+def pca_and_plot_fn(model: torch.nn.Module, 
                  X: torch.Tensor, 
                  y_true: torch.Tensor, 
                  y_preds: torch.Tensor, 
@@ -159,4 +160,4 @@ with torch.inference_mode():
     y_preds = torch.round(torch.sigmoid(model(X_test))).squeeze()
 
 # Plot the data
-pca_and_plot(model, X_test, y_test, y_preds, "PCA of Breast Cancer Test Dataset", "PCA of Model Test Predictions")
+pca_and_plot_fn(model, X_test, y_test, y_preds, "PCA of Breast Cancer Test Dataset", "PCA of Model Test Predictions")
